@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+    <h1>QA Evaluations</h1>
+    <p>Suba un archivo XLSX con las evaluaciones de QA.</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">Archivo XLSX:</label>
+        <input type="file" name="file" id="file" accept=".xlsx" required>
+        <br><br>
+        <button type="submit">Subir Evaluaciones QA</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+    <h1>Reporte de Weekly Metrics</h1>
+    
+    <!-- Formulario de filtro -->
+    <form method="get">
+        <label for="agent">Agente:</label>
+        <select name="agent" id="agent">
+            <option value="">--Todos--</option>
+            {% for agent in agents %}
+                <option value="{{ agent.operator_login }}" {% if selected_agent == agent.operator_login %}selected{% endif %}>
+                    {{ agent.agent_name }}
+                </option>
+            {% endfor %}
+        </select>
+        
+        <label for="segment">Segmento:</label>
+        <select name="segment" id="segment">
+            <option value="">--Todos--</option>
+            <option value="repartidores" {% if selected_segment == "repartidores" %}selected{% endif %}>Repartidores</option>
+            <option value="clientes" {% if selected_segment == "clientes" %}selected{% endif %}>Clientes</option>
+            <option value="restaurantes" {% if selected_segment == "restaurantes" %}selected{% endif %}>Restaurantes</option>
+            <option value="general" {% if selected_segment == "general" %}selected{% endif %}>General</option>
+        </select>
+        
+        <br><br>
+        <label for="week_start">Inicio de la semana:</label>
+        <input type="date" name="week_start" id="week_start" value="{{ week_start }}">
+        <label for="week_end">Fin de la semana:</label>
+        <input type="date" name="week_end" id="week_end" value="{{ week_end }}">
+        <br><br>
+        <button type="submit">Filtrar</button>
+    </form>
+    
+    <br>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Agente</th>
+                <th>Segmento</th>
+                <th>Inicio de Semana</th>
+                <th>Fin de Semana</th>
+                <th>Sesiones</th>
+                <th>Acciones</th>
+                <th>Acciones Cerradas</th>
+                <th>Productividad</th>
+                <th>AHT (seg)</th>
+                <th>SLA (%)</th>
+                <th>Ratio close/any</th>
+                <th>% Sesiones Cerradas</th>
+                <th>CSAT_cnt</th>
+                <th>CSAT_avg</th>
+                <th>Worktime (mins)</th>
+                <th>Postcall avg (sec)</th>
+                <th>OCC</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for metric in metrics %}
+            <tr>
+                <td>{{ metric.operator_login.agent_name }}</td>
+                <td>{{ metric.segment }}</td>
+                <td>{{ metric.week_start }}</td>
+                <td>{{ metric.week_end }}</td>
+                <td>{{ metric.sessions_cnt }}</td>
+                <td>{{ metric.actions_cnt }}</td>
+                <td>{{ metric.action_close_cnt }}</td>
+                <td>{{ metric.productivity }}</td>
+                <td>{{ metric.AHT_sec }}</td>
+                <td>{{ metric.SL_session_duration }}</td>
+                <td>{{ metric.ratio_close_any }}</td>
+                <td>{{ metric.closed_sessions_percentage }}</td>
+                <td>{{ metric.CSAT_cnt }}</td>
+                <td>{{ metric.CSAT_avg }}</td>
+                <td>{{ metric.worktime_mins }}</td>
+                <td>{{ metric.postcall_avg_sec }}</td>
+                <td>{{ metric.OCC }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="17">No se encontraron registros.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

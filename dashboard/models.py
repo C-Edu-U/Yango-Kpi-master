@@ -38,11 +38,22 @@ class QAEvaluation(models.Model):
     evaluation_key = models.CharField(max_length=100, primary_key=True)
     priority = models.CharField(max_length=50)
     type = models.CharField(max_length=50)
-    # El agente evaluado se relaciona con la tabla Agents
-    agent = models.ForeignKey(Agent, on_delete=models.CASCADE, related_name="qa_evaluations")
+    # Actualizamos la relación para que referencie al campo 'agent_name'
+    agent = models.ForeignKey(
+        Agent, 
+        on_delete=models.CASCADE, 
+        to_field='agent_name', 
+        related_name="qa_evaluations"
+    )
     interaction_date = models.DateTimeField()
-    # El supervisor también se relaciona con Agents; se usará SET_NULL en caso de que se elimine
-    supervisor = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, related_name="supervisor_evaluations")
+    # Para el supervisor, se puede hacer lo mismo si se desea referenciar por nombre
+    supervisor = models.ForeignKey(
+        Agent, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        to_field='agent_name', 
+        related_name="supervisor_evaluations"
+    )
     status = models.CharField(max_length=50)
     updated = models.DateTimeField()
     total_final_score = models.DecimalField(max_digits=5, decimal_places=2)

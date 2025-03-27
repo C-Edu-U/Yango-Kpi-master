@@ -13,4 +13,7 @@ urlpatterns = [
     path('report/weekly/', views.weekly_metrics_report_view, name='weekly_metrics_report'),
     path('report/qa/', views.qa_report_view, name='qa_report'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('download/weekly_pdf/', views.download_weekly_metrics_pdf, name='download_weekly_pdf'),
+    path('download/qa_pdf/', views.download_qa_pdf, name='download_qa_pdf'),
+    path('download/dashboard_pdf/', views.download_dashboard_pdf, name='download_dashboard_pdf'),
 ]

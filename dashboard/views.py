@@ -10,6 +10,7 @@ import pandas as pd
 import re
 from datetime import datetime
 from django.contrib.auth import logout
+from .utils import render_to_pdf
 
 def landing_view(request):
     """Vista para la landing page del sitio."""
@@ -382,3 +383,132 @@ def dashboard_view(request):
         'week_end': week_end,
     }
     return render(request, 'dashboard/dashboard.html', context)
+
+@login_required
+def download_weekly_metrics_pdf(request):
+    # Obtener parámetros de la URL
+    agent_filter = request.GET.get('agent') or ""
+    week_start = request.GET.get('week_start') or ""
+    week_end = request.GET.get('week_end') or ""
+    segment_filter = request.GET.get('segment') or ""
+
+    # Si llegan como "None", reemplazarlos por cadena vacía
+    if week_start == "None":
+        week_start = ""
+    if week_end == "None":
+        week_end = ""
+
+    # Consulta inicial para WeeklyMetrics
+    metrics = WeeklyMetrics.objects.all().select_related('operator_login')
+    if agent_filter:
+        metrics = metrics.filter(operator_login__operator_login=agent_filter)
+    if segment_filter:
+        metrics = metrics.filter(segment=segment_filter)
+    if week_start:
+        metrics = metrics.filter(week_start__gte=week_start)
+    if week_end:
+        metrics = metrics.filter(week_end__lte=week_end)
+    
+    agents = Agent.objects.all()
+    
+    context = {
+        'metrics': metrics,
+        'agents': agents,
+        'selected_agent': agent_filter,
+        'selected_segment': segment_filter,
+        'week_start': week_start,
+        'week_end': week_end,
+    }
+    pdf = render_to_pdf('dashboard/weekly_metrics_report_pdf.html', context)
+    return pdf
+
+@login_required
+def download_qa_pdf(request):
+    agent_filter = request.GET.get('agent')
+    week_start = request.GET.get('week_start')
+    week_end = request.GET.get('week_end')
+    team_filter = request.GET.get('team')
+    
+    qa_evals = QAEvaluation.objects.all().select_related('agent', 'supervisor')
+    if agent_filter:
+        qa_evals = qa_evals.filter(agent__agent_name=agent_filter)
+    if team_filter:
+        qa_evals = qa_evals.filter(agent__team=team_filter)
+    if week_start:
+        qa_evals = qa_evals.filter(interaction_date__gte=week_start)
+    if week_end:
+        qa_evals = qa_evals.filter(interaction_date__lte=week_end)
+    
+    qa_avg = qa_evals.aggregate(avg_score=Avg('total_final_score'))['avg_score']
+    agents = Agent.objects.all()
+    teams = Agent.objects.values_list('team', flat=True).distinct()
+    
+    context = {
+        'qa_evals': qa_evals,
+        'agents': agents,
+        'teams': teams,
+        'selected_agent': agent_filter,
+        'selected_team': team_filter,
+        'week_start': week_start,
+        'week_end': week_end,
+        'qa_avg': qa_avg,
+    }
+    pdf = render_to_pdf('dashboard/qa_report_pdf.html', context)
+    return pdf
+
+@login_required
+def download_dashboard_pdf(request):
+    agent_filter = request.GET.get('agent')
+    team_filter = request.GET.get('team')
+    week_start = request.GET.get('week_start')
+    week_end = request.GET.get('week_end')
+    
+    metrics = WeeklyMetrics.objects.all().select_related('operator_login')
+    if week_start:
+        metrics = metrics.filter(week_start__gte=week_start)
+    if week_end:
+        metrics = metrics.filter(week_end__lte=week_end)
+    if agent_filter:
+        metrics = metrics.filter(operator_login__agent_name=agent_filter)
+    if team_filter:
+        metrics = metrics.filter(operator_login__team=team_filter)
+    
+    # Calcular promedios para gráficos
+    aht_data = metrics.filter(segment='general').aggregate(avg_aht=Avg('AHT_sec'))['avg_aht']
+    sl_data = metrics.filter(segment='general').aggregate(avg_sl=Avg('SL_session_duration'))['avg_sl']
+    csat_clientes = metrics.filter(segment='clientes').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    csat_repartidores = metrics.filter(segment='repartidores').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    csat_restaurantes = metrics.filter(segment='restaurantes').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    csat_general = metrics.filter(segment='general').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    
+    qa_evals = QAEvaluation.objects.all().select_related('agent', 'supervisor')
+    if week_start:
+        qa_evals = qa_evals.filter(interaction_date__gte=week_start)
+    if week_end:
+        qa_evals = qa_evals.filter(interaction_date__lte=week_end)
+    if agent_filter:
+        qa_evals = qa_evals.filter(agent__agent_name=agent_filter)
+    if team_filter:
+        qa_evals = qa_evals.filter(agent__team=team_filter)
+    qa_avg = qa_evals.aggregate(avg_qa=Avg('total_final_score'))['avg_qa']
+    
+    agents = Agent.objects.values_list('agent_name', flat=True).distinct()
+    teams = Agent.objects.values_list('team', flat=True).distinct()
+    
+    context = {
+        'aht_data': aht_data,
+        'sl_data': sl_data,
+        'csat_clientes': csat_clientes,
+        'csat_repartidores': csat_repartidores,
+        'csat_restaurantes': csat_restaurantes,
+        'csat_general': csat_general,
+        'qa_avg': qa_avg,
+        'agents': agents,
+        'teams': teams,
+        'selected_agent': agent_filter,
+        'selected_team': team_filter,
+        'week_start': week_start,
+        'week_end': week_end,
+    }
+    pdf = render_to_pdf('dashboard/dashboard_pdf.html', context)
+    return pdf

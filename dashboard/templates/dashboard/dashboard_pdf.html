@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de desempeño y KPIs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 4px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dashboard Report</h1>
+    </div>
+
+    <!-- Sección de Filtros Aplicados -->
+    <div class="section">
+        <h2>Datos del reporte</h2>
+        <p>
+            {% if selected_agent %} Agente: {{ selected_agent }} {% endif %}
+            {% if selected_team %} | Equipo: {{ selected_team }} {% endif %}
+            {% if week_start %} | Inicio: {{ week_start }} {% endif %}
+            {% if week_end %} | Fin: {{ week_end }} {% endif %}
+        </p>
+    </div>
+
+    <!-- Sección de Resumen de Weekly Metrics -->
+    <div class="section">
+        <h2>Resumen de Weekly Metrics</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Indicador</th>
+                    <th>Valor Promedio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AHT (seg) - General</td>
+                    <td>{{ aht_data|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>SLA (%) - General</td>
+                    <td>{{ sl_data|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>CSAT - Clientes</td>
+                    <td>{{ csat_clientes|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>CSAT - Repartidores</td>
+                    <td>{{ csat_repartidores|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>CSAT - Restaurantes</td>
+                    <td>{{ csat_restaurantes|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>CSAT - General</td>
+                    <td>{{ csat_general|default:"N/A" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sección de Resumen de QA Evaluations -->
+    <div class="section">
+        <h2>Resumen de Evaluaciones QA</h2>
+        <p>
+            <strong>Promedio Total Final Score (QA):</strong>
+            {% if qa_avg %}
+                {{ qa_avg|floatformat:2 }}
+            {% else %}
+                No disponible
+            {% endif %}
+        </p>
+    </div>
+</body>
+</html>

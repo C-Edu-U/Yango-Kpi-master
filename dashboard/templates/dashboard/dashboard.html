@@ -31,6 +31,14 @@
 </form>
 
 <br>
+<!-- Botón de descarga de PDF para el dashboard -->
+<a href="{% url 'download_dashboard_pdf' %}?agent={{ selected_agent|default:'' }}&team={{ selected_team|default:'' }}&week_start={{ week_start|default:'' }}&week_end={{ week_end|default:'' }}"
+   style="display: inline-block; background: #333; color: #fff; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+   Descargar PDF
+</a>
+<br>
+
+<br>
 <!-- Promedio de QA (sin gráfica) -->
 <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
     <strong>Promedio de QA:</strong> 

@@ -32,7 +32,11 @@
         <br><br>
         <button type="submit">Filtrar</button>
     </form>
-    
+
+    <br>
+    <a href="{% url 'download_qa_pdf' %}?agent={{ selected_agent|default:'' }}&team={{ selected_team|default:'' }}&week_start={{ week_start|default:'' }}&week_end={{ week_end|default:'' }}" style="background: #333; color: #fff; padding: 8px 12px; text-decoration: none; border-radius: 4px;">Descargar PDF</a>
+    <br>
+
     <br>
     <!-- Recuadro con el promedio de total_final_score -->
     {% if qa_avg %}

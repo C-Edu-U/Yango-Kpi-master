@@ -3,4 +3,4 @@ Django==5.1.7
 sqlparse==0.5.3
 pandas
 mysqlclient
-pip install xhtml2pdf
+xhtml2pdf

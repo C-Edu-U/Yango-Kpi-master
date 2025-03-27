@@ -12,4 +12,5 @@ urlpatterns = [
     path('qa-evaluations/', views.qa_evaluations_view, name='qa_evaluations'),
     path('report/weekly/', views.weekly_metrics_report_view, name='weekly_metrics_report'),
     path('report/qa/', views.qa_report_view, name='qa_report'),
+    path('dashboard/', views.dashboard_view, name='dashboard'),
 ]

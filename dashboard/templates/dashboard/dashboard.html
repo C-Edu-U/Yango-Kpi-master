@@ -1,0 +1,135 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<!-- Formulario de filtro -->
+<form method="get">
+    <label for="agent">Agente:</label>
+    <select name="agent" id="agent">
+        <option value="">--Todos--</option>
+        {% for agent in agents %}
+            <option value="{{ agent }}" {% if selected_agent == agent %}selected{% endif %}>{{ agent }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="team">Equipo:</label>
+    <select name="team" id="team">
+        <option value="">--Todos--</option>
+        {% for team in teams %}
+            <option value="{{ team }}" {% if selected_team == team %}selected{% endif %}>{{ team }}</option>
+        {% endfor %}
+    </select>
+
+    <br>
+    <label for="week_start">Inicio de la semana:</label>
+    <input type="date" name="week_start" id="week_start" value="{{ week_start }}">
+    <label for="week_end">Fin de la semana:</label>
+    <input type="date" name="week_end" id="week_end" value="{{ week_end }}">
+    <br>
+    <button type="submit">Filtrar</button>
+</form>
+
+<br>
+<!-- Promedio de QA (sin gráfica) -->
+<div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
+    <strong>Promedio de QA:</strong> 
+    {% if qa_avg %}
+        {{ qa_avg|floatformat:2 }}
+    {% else %}
+        No hay evaluaciones.
+    {% endif %}
+</div>
+
+<br>
+<!-- Gráfica de AHT - segmento general -->
+<canvas id="ahtChart" width="400" height="200"></canvas>
+<br>
+<!-- Gráfica de SL - segmento general -->
+<canvas id="slChart" width="400" height="200"></canvas>
+<br>
+<!-- Gráfica de CSAT (por segmentos) -->
+<canvas id="csatChart" width="400" height="200"></canvas>
+
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gráfica de AHT para segmento general
+    var ahtCtx = document.getElementById('ahtChart').getContext('2d');
+    var ahtChart = new Chart(ahtCtx, {
+        type: 'bar',
+        data: {
+            labels: ['AHT General'],
+            datasets: [{
+                label: 'AHT (seg)',
+                data: [{{ aht_data|default:0 }}],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfica de SL para segmento general
+    var slCtx = document.getElementById('slChart').getContext('2d');
+    var slChart = new Chart(slCtx, {
+        type: 'bar',
+        data: {
+            labels: ['SL General'],
+            datasets: [{
+                label: 'SL (%)',
+                data: [{{ sl_data|default:0 }}],
+                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfica de CSAT por segmentos
+    var csatCtx = document.getElementById('csatChart').getContext('2d');
+    var csatChart = new Chart(csatCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Clientes', 'Repartidores', 'Restaurantes', 'General'],
+            datasets: [{
+                label: 'CSAT Promedio',
+                data: [
+                    {{ csat_clientes|default:0 }},
+                    {{ csat_repartidores|default:0 }},
+                    {{ csat_restaurantes|default:0 }},
+                    {{ csat_general|default:0 }}
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}

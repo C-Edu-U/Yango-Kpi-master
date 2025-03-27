@@ -318,3 +318,67 @@ def delete_agent_view(request, operator_login):
         agent.delete()
         return redirect('agents')
     return render(request, 'dashboard/delete_agent.html', {'agent': agent})
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Avg
+from .models import Agent, WeeklyMetrics, QAEvaluation
+
+@login_required
+def dashboard_view(request):
+    agent_filter = request.GET.get('agent')
+    team_filter = request.GET.get('team')
+    week_start = request.GET.get('week_start')
+    week_end = request.GET.get('week_end')
+    
+    # Filtrar Weekly Metrics
+    metrics = WeeklyMetrics.objects.all().select_related('operator_login')
+    if week_start:
+        metrics = metrics.filter(week_start__gte=week_start)
+    if week_end:
+        metrics = metrics.filter(week_end__lte=week_end)
+    if agent_filter:
+        metrics = metrics.filter(operator_login__agent_name=agent_filter)
+    if team_filter:
+        metrics = metrics.filter(operator_login__team=team_filter)
+    
+    # Calcular promedios para Weekly Metrics
+    aht_data = metrics.filter(segment='general').aggregate(avg_aht=Avg('AHT_sec'))['avg_aht']
+    sl_data = metrics.filter(segment='general').aggregate(avg_sl=Avg('SL_session_duration'))['avg_sl']
+    csat_clientes = metrics.filter(segment='clientes').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    csat_repartidores = metrics.filter(segment='repartidores').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    csat_restaurantes = metrics.filter(segment='restaurantes').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    csat_general = metrics.filter(segment='general').aggregate(avg_csat=Avg('CSAT_avg'))['avg_csat']
+    
+    # Filtrar QA Evaluations
+    qa_evals = QAEvaluation.objects.all().select_related('agent', 'supervisor')
+    if week_start:
+        qa_evals = qa_evals.filter(interaction_date__gte=week_start)
+    if week_end:
+        qa_evals = qa_evals.filter(interaction_date__lte=week_end)
+    if agent_filter:
+        qa_evals = qa_evals.filter(agent__agent_name=agent_filter)
+    if team_filter:
+        qa_evals = qa_evals.filter(agent__team=team_filter)
+    qa_avg = qa_evals.aggregate(avg_qa=Avg('total_final_score'))['avg_qa']
+    
+    # Obtener listas de agentes y equipos para el filtro
+    agents = Agent.objects.values_list('agent_name', flat=True).distinct()
+    teams = Agent.objects.values_list('team', flat=True).distinct()
+    
+    context = {
+        'aht_data': aht_data,
+        'sl_data': sl_data,
+        'csat_clientes': csat_clientes,
+        'csat_repartidores': csat_repartidores,
+        'csat_restaurantes': csat_restaurantes,
+        'csat_general': csat_general,
+        'qa_avg': qa_avg,
+        'agents': agents,
+        'teams': teams,
+        'selected_agent': agent_filter,
+        'selected_team': team_filter,
+        'week_start': week_start,
+        'week_end': week_end,
+    }
+    return render(request, 'dashboard/dashboard.html', context)

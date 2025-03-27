@@ -1,12 +1,29 @@
 from django.shortcuts import render, redirect
-from .models import Agent
 from .forms import AgentForm
 import pandas as pd
 from django.shortcuts import render, redirect
-from .models import Agent, WeeklyMetrics
 from django.db.models import Avg
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
+from .models import Agent, WeeklyMetrics, QAEvaluation
+import pandas as pd
+import re
+from datetime import datetime
+from django.contrib.auth import logout
 
+def landing_view(request):
+    """Vista para la landing page del sitio."""
+    return render(request, 'dashboard/landing.html')
 
+class CustomLoginView(LoginView):
+    template_name = 'dashboard/login.html'
+
+    def get_success_url(self):
+        """Redirige al usuario autenticado si es staff, de lo contrario a la landing page."""
+        if self.request.user.is_staff:
+            return '/agents/'
+        return '/'
+@login_required
 def agents_view(request):
     if request.method == 'POST':
         form = AgentForm(request.POST)
@@ -19,7 +36,7 @@ def agents_view(request):
     agents = Agent.objects.all()  # Obtiene la lista de agentes existentes
     return render(request, 'dashboard/agents.html', {'form': form, 'agents': agents})
 
-
+@login_required
 def weekly_metrics_view(request):
     context = {}
     if request.method == 'POST':
@@ -105,12 +122,9 @@ def weekly_metrics_view(request):
     
     return render(request, 'dashboard/weekly_metrics.html', context)
 
-import pandas as pd
-import re
-from datetime import datetime
-from django.shortcuts import render
-from .models import Agent, QAEvaluation
 
+
+@login_required
 def qa_evaluations_view(request):
     context = {}
     if request.method == 'POST':
@@ -209,7 +223,7 @@ def qa_evaluations_view(request):
     
     return render(request, 'dashboard/qa_evaluations.html')
 
-
+@login_required
 def weekly_metrics_report_view(request):
     # Obtener filtros desde los parámetros GET
     agent_filter = request.GET.get('agent')
@@ -241,7 +255,7 @@ def weekly_metrics_report_view(request):
     }
     return render(request, 'dashboard/weekly_metrics_report.html', context)
 
-
+@login_required
 def qa_report_view(request):
     # Obtener filtros desde los parámetros GET
     agent_filter = request.GET.get('agent')
@@ -279,3 +293,8 @@ def qa_report_view(request):
     }
     return render(request, 'dashboard/qa_report.html', context)
 
+def custom_logout_view(request):
+    # Realiza el logout del usuario
+    logout(request)
+    # Redirige al usuario a la página de login (o landing page)
+    return redirect('landing')

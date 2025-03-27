@@ -189,6 +189,11 @@ p[style*="color: green;"] {
         <a href="{% url 'qa_evaluations' %}">QA Evaluations</a>
         <a href="{% url 'weekly_metrics_report' %}">Reporte Weekly Metrics</a>
         <a href="{% url 'qa_report' %}">Reporte QA</a>
+        
+        <!-- Botón de Logout personalizado al final del menú lateral -->
+        <div class="logout">
+            <a href="{% url 'logout' %}" style="font-weight: bold; color: rgb(0, 17, 255);">Logout</a>
+        </div>
     </div>
     <div class="content">
         {% block content %}

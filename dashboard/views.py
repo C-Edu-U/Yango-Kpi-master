@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import AgentForm
 import pandas as pd
 from django.shortcuts import render, redirect
@@ -298,3 +298,23 @@ def custom_logout_view(request):
     logout(request)
     # Redirige al usuario a la página de login (o landing page)
     return redirect('landing')
+
+@login_required
+def edit_agent_view(request, operator_login):
+    agent = get_object_or_404(Agent, operator_login=operator_login)
+    if request.method == 'POST':
+        form = AgentForm(request.POST, instance=agent)
+        if form.is_valid():
+            form.save()
+            return redirect('agents')
+    else:
+        form = AgentForm(instance=agent)
+    return render(request, 'dashboard/edit_agent.html', {'form': form, 'agent': agent})
+
+@login_required
+def delete_agent_view(request, operator_login):
+    agent = get_object_or_404(Agent, operator_login=operator_login)
+    if request.method == 'POST':
+        agent.delete()
+        return redirect('agents')
+    return render(request, 'dashboard/delete_agent.html', {'agent': agent})

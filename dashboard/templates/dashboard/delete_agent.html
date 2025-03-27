@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<h1>Eliminar Agente: {{ agent.agent_name }}</h1>
+<p>¿Está seguro de que desea eliminar este agente?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'agents' %}">Cancelar</a>
+</form>
+{% endblock %}

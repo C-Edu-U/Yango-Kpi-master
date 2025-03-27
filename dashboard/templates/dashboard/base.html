@@ -183,6 +183,11 @@ p[style*="color: green;"] {
 </head>
 <body>
     <div class="sidebar">
+        <!-- Mostrar el usuario loggeado en la parte superior -->
+        <div class="user-info">
+            Bienvenido, {{ user.username }}
+        </div>
+        
         <h2>Menú</h2>
         <a href="{% url 'agents' %}">Agentes</a>
         <a href="{% url 'weekly_metrics' %}">Weekly Metrics</a>
@@ -192,7 +197,7 @@ p[style*="color: green;"] {
         
         <!-- Botón de Logout personalizado al final del menú lateral -->
         <div class="logout">
-            <a href="{% url 'logout' %}" style="font-weight: bold; color: rgb(0, 17, 255);">Logout</a>
+            <a href="{% url 'logout' %}" style="font-weight: bold; color: rgb(17, 0, 255);">Logout</a>
         </div>
     </div>
     <div class="content">

@@ -13,26 +13,27 @@ class WeeklyMetrics(models.Model):
     segment = models.CharField(max_length=50)
     week_start = models.DateField()
     week_end = models.DateField()
-    sessions_cnt = models.IntegerField()
-    actions_cnt = models.IntegerField()
-    action_close_cnt = models.IntegerField()
+    sessions_cnt = models.DecimalField(max_digits=10, decimal_places=2)  # Cambiado a DecimalField
+    actions_cnt = models.DecimalField(max_digits=10, decimal_places=2)
+    action_close_cnt = models.DecimalField(max_digits=10, decimal_places=2)
     productivity = models.DecimalField(max_digits=10, decimal_places=2)
-    AHT_sec = models.IntegerField()
+    AHT_sec = models.DecimalField(max_digits=10, decimal_places=2)  # Si se requiere conservar decimales
     SL_session_duration = models.DecimalField(max_digits=5, decimal_places=2)
     ratio_close_any = models.DecimalField(max_digits=5, decimal_places=2)
     closed_sessions_percentage = models.DecimalField(max_digits=5, decimal_places=2)
-    CSAT_cnt = models.IntegerField()
+    CSAT_cnt = models.DecimalField(max_digits=10, decimal_places=2)  # Dependiendo de si tiene decimales o no
     CSAT_avg = models.DecimalField(max_digits=5, decimal_places=2)
-    worktime_mins = models.IntegerField()
-    postcall_avg_sec = models.IntegerField()
+    worktime_mins = models.DecimalField(max_digits=10, decimal_places=2)
+    postcall_avg_sec = models.DecimalField(max_digits=10, decimal_places=2)
     OCC = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         unique_together = (('operator_login', 'segment', 'week_start', 'week_end'),)
-        # Esto asegura que no se registren duplicados para cada combinación de agente, segmento y semana.
+        # Asegura que no haya duplicados con la combinación segmento, agente y semana
 
     def __str__(self):
         return f"{self.operator_login} - {self.segment} ({self.week_start} to {self.week_end})"
+
 
 class QAEvaluation(models.Model):
     evaluation_key = models.CharField(max_length=100, primary_key=True)

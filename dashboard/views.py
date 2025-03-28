@@ -10,7 +10,9 @@ import pandas as pd
 import re
 from datetime import datetime
 from django.contrib.auth import logout
-from .utils import render_to_pdf
+from .utils import render_to_pdf, safe_int, safe_float
+
+
 
 def landing_view(request):
     """Vista para la landing page del sitio."""
@@ -24,6 +26,7 @@ class CustomLoginView(LoginView):
         if self.request.user.is_staff:
             return '/agents/'
         return '/'
+
 @login_required
 def agents_view(request):
     if request.method == 'POST':
@@ -41,7 +44,6 @@ def agents_view(request):
 def weekly_metrics_view(request):
     context = {}
     if request.method == 'POST':
-        # Obtener datos del formulario
         segment = request.POST.get('segment')
         week_start = request.POST.get('week_start')
         week_end = request.POST.get('week_end')
@@ -52,13 +54,11 @@ def weekly_metrics_view(request):
             return render(request, 'dashboard/weekly_metrics.html', context)
 
         try:
-            # Leer el archivo XLSX utilizando Pandas
             df = pd.read_excel(file)
         except Exception as e:
             context['error'] = f"Error al leer el archivo: {e}"
             return render(request, 'dashboard/weekly_metrics.html', context)
 
-        # Columnas requeridas en el archivo XLSX
         required_columns = [
             'operator_login',
             'Sessions cnt',
@@ -66,7 +66,7 @@ def weekly_metrics_view(request):
             'Action Close cnt',
             'Productivity, actions/hour',
             'AHT, sec',
-            'SL session duration(%)',
+            'SL  session duration',  # Actualizado al nombre correcto
             'cnt close / cnt any_actions',
             '% closed sessions',
             'CSAT_cnt',
@@ -76,54 +76,50 @@ def weekly_metrics_view(request):
             'OCC'
         ]
         
-        # Verificar que todas las columnas requeridas estén presentes
         for col in required_columns:
             if col not in df.columns:
                 context['error'] = f"Falta la columna requerida: {col}"
                 return render(request, 'dashboard/weekly_metrics.html', context)
         
-        # Contador para los registros insertados
         count = 0
         
-        # Procesar cada fila del DataFrame
         for index, row in df.iterrows():
             operator_login_value = row['operator_login']
             try:
-                # Buscar el agente por su operator_login
                 agent = Agent.objects.get(operator_login=operator_login_value)
             except Agent.DoesNotExist:
-                # Si el agente no existe, se puede optar por omitir el registro o registrar un error.
-                # Aquí se omite el registro.
+                # Si el agente no existe, se omite el registro.
                 continue
 
-            # Crear un nuevo registro de WeeklyMetrics
-            WeeklyMetrics.objects.create(
-                operator_login = agent,
-                segment = segment,
-                week_start = week_start,
-                week_end = week_end,
-                sessions_cnt = int(row['Sessions cnt']),
-                actions_cnt = int(row['Actions cnt']),
-                action_close_cnt = int(row['Action Close cnt']),
-                productivity = row['Productivity, actions/hour'],
-                AHT_sec = int(row['AHT, sec']),
-                SL_session_duration = row['SL session duration(%)'],
-                ratio_close_any = row['cnt close / cnt any_actions'],
-                closed_sessions_percentage = row['% closed sessions'],
-                CSAT_cnt = int(row['CSAT_cnt']),
-                CSAT_avg = row['CSAT_avg'],
-                worktime_mins = int(row['Worktime, mins']),
-                postcall_avg_sec = int(row['postcall avg, sec']),
-                OCC = row['OCC']
-            )
-            count += 1
+            try:
+                WeeklyMetrics.objects.create(
+                    operator_login = agent,
+                    segment = segment,
+                    week_start = week_start,
+                    week_end = week_end,
+                    sessions_cnt = safe_int(row['Sessions cnt']),
+                    actions_cnt = safe_int(row['Actions cnt']),
+                    action_close_cnt = safe_int(row['Action Close cnt']),
+                    productivity = safe_float(row['Productivity, actions/hour']),
+                    AHT_sec = safe_int(row['AHT, sec']),
+                    SL_session_duration = safe_float(row['SL  session duration']),
+                    ratio_close_any = safe_float(row['cnt close / cnt any_actions']),
+                    closed_sessions_percentage = safe_float(row['% closed sessions']),
+                    CSAT_cnt = safe_int(row['CSAT_cnt']),
+                    CSAT_avg = safe_float(row['CSAT_avg']),
+                    worktime_mins = safe_int(row['Worktime, mins']),
+                    postcall_avg_sec = safe_int(row['postcall avg, sec']),
+                    OCC = safe_float(row['OCC'])
+                )
+                count += 1
+            except Exception as e:
+                # Puedes registrar el error o ignorar la fila
+                continue
         
         context['success'] = f"Se importaron {count} registros exitosamente."
         return render(request, 'dashboard/weekly_metrics.html', context)
     
     return render(request, 'dashboard/weekly_metrics.html', context)
-
-
 
 @login_required
 def qa_evaluations_view(request):
@@ -319,11 +315,6 @@ def delete_agent_view(request, operator_login):
         agent.delete()
         return redirect('agents')
     return render(request, 'dashboard/delete_agent.html', {'agent': agent})
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.db.models import Avg
-from .models import Agent, WeeklyMetrics, QAEvaluation
 
 @login_required
 def dashboard_view(request):

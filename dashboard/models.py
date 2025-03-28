@@ -38,7 +38,7 @@ class QAEvaluation(models.Model):
     evaluation_key = models.CharField(max_length=100, primary_key=True)
     priority = models.CharField(max_length=50)
     type = models.CharField(max_length=50)
-    # Actualizamos la relación para que referencie al campo 'agent_name'
+    # Se referencia por el campo 'agent_name'
     agent = models.ForeignKey(
         Agent, 
         on_delete=models.CASCADE, 
@@ -46,7 +46,6 @@ class QAEvaluation(models.Model):
         related_name="qa_evaluations"
     )
     interaction_date = models.DateTimeField()
-    # Para el supervisor, se puede hacer lo mismo si se desea referenciar por nombre
     supervisor = models.ForeignKey(
         Agent, 
         on_delete=models.SET_NULL, 
@@ -57,6 +56,9 @@ class QAEvaluation(models.Model):
     status = models.CharField(max_length=50)
     updated = models.DateTimeField()
     total_final_score = models.DecimalField(max_digits=5, decimal_places=2)
+    # Nuevos campos opcionales:
+    ticket = models.URLField(max_length=200, blank=True, null=True)
+    comments_on_interaction = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.evaluation_key

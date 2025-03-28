@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import AgentForm
+from .forms import AgentForm, QAEvaluationCommentsForm
 import pandas as pd
 from django.shortcuts import render, redirect
 from django.db.models import Avg
@@ -512,3 +512,15 @@ def download_dashboard_pdf(request):
     }
     pdf = render_to_pdf('dashboard/dashboard_pdf.html', context)
     return pdf
+
+@login_required
+def add_comments_view(request, evaluation_key):
+    evaluation = get_object_or_404(QAEvaluation, evaluation_key=evaluation_key)
+    if request.method == 'POST':
+        form = QAEvaluationCommentsForm(request.POST, instance=evaluation)
+        if form.is_valid():
+            form.save()
+            return redirect('qa_evaluations')  # Redirige a la lista de evaluaciones QA
+    else:
+        form = QAEvaluationCommentsForm(instance=evaluation)
+    return render(request, 'dashboard/add_comments.html', {'form': form, 'evaluation': evaluation})

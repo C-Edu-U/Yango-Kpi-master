@@ -49,7 +49,7 @@
         </div>
     {% endif %}
     
-    <br>
+    <br><h2>Lista de Evaluaciones QA</h2>
     <table border="1" cellpadding="5" cellspacing="0">
         <thead>
             <tr>
@@ -62,6 +62,9 @@
                 <th>Status</th>
                 <th>Updated</th>
                 <th>Total Final Score</th>
+                <th>Ticket</th>
+                <th>Comentarios</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -72,14 +75,19 @@
                 <td>{{ qa.type }}</td>
                 <td>{{ qa.agent.agent_name }}</td>
                 <td>{{ qa.interaction_date }}</td>
-                <td>{% if qa.supervisor %}{{ qa.supervisor.agent_name }}{% endif %}</td>
+                <td>{% if qa.supervisor %}{{ qa.supervisor.agent_name }}{% else %} - {% endif %}</td>
                 <td>{{ qa.status }}</td>
                 <td>{{ qa.updated }}</td>
                 <td>{{ qa.total_final_score }}</td>
+                <td>{{ qa.ticket|default:"" }}</td>
+                <td>{{ qa.comments_on_interaction|default:"" }}</td>
+                <td>
+                    <a href="{% url 'add_comments' qa.evaluation_key %}">Agregar/Editar Comentarios</a>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="9">No se encontraron evaluaciones.</td>
+                <td colspan="12">No se encontraron evaluaciones.</td>
             </tr>
             {% endfor %}
         </tbody>

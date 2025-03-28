@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<h1>Agregar Comentarios y Ticket para la Evaluación {{ evaluation.evaluation_key }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Comentarios</button>
+    <a href="{% url 'qa_report' %}">Cancelar</a>
+</form>
+{% endblock %}

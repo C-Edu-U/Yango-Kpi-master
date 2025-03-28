@@ -16,4 +16,5 @@ urlpatterns = [
     path('download/weekly_pdf/', views.download_weekly_metrics_pdf, name='download_weekly_pdf'),
     path('download/qa_pdf/', views.download_qa_pdf, name='download_qa_pdf'),
     path('download/dashboard_pdf/', views.download_dashboard_pdf, name='download_dashboard_pdf'),
+    path('qa-evaluations/add-comments/<str:evaluation_key>/', views.add_comments_view, name='add_comments'),
 ]

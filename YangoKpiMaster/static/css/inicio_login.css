@@ -1,0 +1,170 @@
+/* styles.css */
+
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #291d1d, #291d1d); /* Fondo con gradiente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+.login {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #ffffff, #291d1d70); /* Fondo con gradiente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+/* Contenedor común con bordes redondeados y sombra */
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px #58585833;
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 1s ease-out;
+}
+/*----------todo lo del login---------------*/
+/* Estilo para el contenedor del login */
+.login-container {
+    width: 100%;
+    max-width: 480px; /* Contenedor con tamaño controlado */
+    height: auto; /* Se ajusta según el contenido */
+    background-color: #fff; /* Fondo blanco para un diseño limpio */
+    color: #333; /* Texto en color gris oscuro para mejor legibilidad */
+    padding: 50px; /* Un poco más de espacio interno para comodidad */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px; /* Espacio entre los elementos */
+    border-radius: 16px; /* Bordes más suaves y modernos */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Sombra más suave y difusa */
+    animation: fadeIn 1s ease-out; /* Efecto de aparición suave */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición para interacciones suaves */
+}
+
+/* Estilo para el formulario de login */
+.login-form {
+    width: 100%; /* Asegura que el formulario ocupe todo el espacio disponible */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Espacio entre los elementos dentro del formulario */
+}
+
+/* Estilo para los campos de entrada */
+.login-form input {
+    width: 100%;
+    padding: 14px 16px; /* Un poco más de espacio para los inputs */
+    border-radius: 10px; /* Bordes más suaves */
+    border: 1px solid #ddd; /* Borde sutil para un look limpio */
+    font-size: 16px; /* Tamaño de fuente adecuado para una buena lectura */
+    color: #333; /* Texto oscuro para buena visibilidad */
+    background-color: #f8f8f8; /* Fondo más claro para los campos */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave para los inputs */
+}
+
+/* Efecto cuando el input recibe el foco */
+.login-form input:focus {
+    border-color: #007bff; /* Color de borde cuando está enfocado */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4); /* Resaltado suave al estar enfocado */
+    outline: none; /* Elimina el contorno predeterminado */
+}
+/*----------fin del login---------------*/
+
+
+/*
+
+
+*/
+  /* Contenedor de bienvenida */
+  .welcome-container {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 1s ease-out;
+}
+/* Animación de aparición */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Barra superior roja */
+.header-bar {
+    background-color: #F00000;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+/* Botón común */
+.btn {
+    background-color: #F00000;
+    color: white;
+    padding: 12px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.btn:hover {
+    background-color: #f73a3a;
+    transform: scale(1.05); /* Aumenta un poco el tamaño */
+    box-shadow: 0 4px 8px #000000; /* Añadir sombra */
+}
+
+.link {
+    display: block;
+    margin-top: 10px;
+    color: #F00000;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Fondo de la página */
+.error-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 15px;
+    filter: blur(15px);
+    z-index: -1;
+}

@@ -1,57 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Yango KPI Master</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        .login-container {
-            background: #fff;
-            padding: 20px;
-            max-width: 400px;
-            margin: 100px auto;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        form {
-            margin-top: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-        }
-        button {
-            margin-top: 20px;
-            width: 100%;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/inicio_login.css' %}">
+    <!-- Agregar FontAwesome para los íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Iniciar Sesión</button>
-        </form>
+<body class="login">
+    <header class="header-bar">
+        <div class="logo-text">YANGO KPI MASTER</div>
+    </header>
+
+    <div class="main-container">
+        <div class="login-container">
+            <h1>Login</h1>
+            <form class="login-form" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn">Iniciar Sesión</button>
+            </form>
+            <a class="btn" href="javascript:history.back()" class="btn-back"><i class="fas fa-arrow-left"></i> Regresar</a>
+        </div>
     </div>
+
 </body>
 </html>
+

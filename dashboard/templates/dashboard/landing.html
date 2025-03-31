@@ -1,32 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yango KPI Master - Landing Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .top-right {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .content {
-            text-align: center;
-            margin-top: 150px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/inicio_login.css' %}">
+    <!-- Agregar FontAwesome para los íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="top-right">
-        <a href="{% url 'login' %}" style="text-decoration: none; font-size: 16px;">Login</a>
+
+    <!-- Barra superior roja con el logo YANGO -->
+    <header class="header-bar">
+        <div class="logo-text">YANGO KPI MASTER</div>
+    </header>
+
+    <div class="error-background"></div>
+
+    <div class="main-container">
+        <!-- Contenedor de Bienvenida -->
+        <div class="welcome-container">
+            <h1>Bienvenido a Yango KPI Master</h1>
+            <p>El sistema para monitorear la calidad en atención al cliente.</p>
+            <!-- Botón para redirigir al login -->
+            <a href="{% url 'login' %}" class="btn"><i class="fas fa-sign-in-alt"></i> INICIAR SESIÓN</a>
+        </div>
     </div>
-    <div class="content">
-        <h1>Bienvenido a Yango KPI Master</h1>
-        <p>El sistema para monitorear la calidad en atención al cliente.</p>
-    </div>
+
 </body>
 </html>

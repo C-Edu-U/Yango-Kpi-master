@@ -17,7 +17,7 @@ def test_landing_page_authenticated(client, django_user_model):
     # Verificar que el status code sea 200
     assert response.status_code == 200
     # Verificar que se muestre el mensaje de bienvenida con el nombre del usuario
-    assert b"Bienvenido, testuser" in response.content
+    assert b"Bienvenido: testuser" in response.content
 
 @pytest.mark.django_db
 def test_agents_view_integration(client, django_user_model):

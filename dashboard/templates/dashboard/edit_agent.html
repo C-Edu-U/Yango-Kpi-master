@@ -5,7 +5,7 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Guardar Cambios</button>
-    <a href="{% url 'agents' %}">Cancelar</a>
+    <button type="submit"><i class="fas fa-save"></i> Guardar Cambios</button>
+    <a class="cancel-button" href="{% url 'agents' %}"><i class="fas fa-times"></i>Cancelar</a>
 </form>
 {% endblock %}

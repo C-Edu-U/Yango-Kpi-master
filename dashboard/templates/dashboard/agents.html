@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}
 
 {% block content %}
-<h1>Gestión de Agentes</h1>
+<h1>Gestión de Agentes <i class="fas fa-user"></i></h1>
 
 <!-- Formulario para agregar un nuevo agente -->
 <h2>Agregar Nuevo Agente</h2>
@@ -29,9 +29,12 @@
             <td>{{ agent.agent_name }}</td>
             <td>{{ agent.team }}</td>
             <td>
-                <a href="{% url 'edit_agent' agent.operator_login %}">Editar</a>
+                <a href="{% url 'edit_agent' agent.operator_login %}">
+                    <i class="fas fa-pencil-alt"></i> Editar
+                </a>
                 |
-                <a href="{% url 'delete_agent' agent.operator_login %}">Eliminar</a>
+                <a href="{% url 'delete_agent' agent.operator_login %}">
+                    <i class="fas fa-trash-alt"></i> Eliminar
             </td>
         </tr>
         {% empty %}

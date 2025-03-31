@@ -5,7 +5,7 @@
 <p>¿Está seguro de que desea eliminar este agente?</p>
 <form method="post">
     {% csrf_token %}
-    <button type="submit">Sí, eliminar</button>
-    <a href="{% url 'agents' %}">Cancelar</a>
+    <button type="submit"><i class="fas fa-trash-alt"></i>  Sí, eliminar</button>
+    <a class="cancel-button" href="{% url 'agents' %}"><i class="fas fa-times"></i>Cancelar</a>
 </form>
 {% endblock %}

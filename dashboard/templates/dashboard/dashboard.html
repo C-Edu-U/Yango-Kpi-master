@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}
 
 {% block content %}
-<h1>Dashboard <i class="fas fa-tachometer-alt"></i></h1>
+<h1>Dashboard</h1>
 
 <!-- Formulario de filtro -->
 <form method="get">
@@ -36,28 +36,30 @@
    style="display: inline-block; background: #333; color: #fff; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
    Descargar PDF
 </a>
-<br>
 
-<br>
-<!-- Promedio de QA (sin gráfica) -->
-<div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
-    <strong>Promedio de QA:</strong> 
-    {% if qa_avg %}
-        {{ qa_avg|floatformat:2 }}
-    {% else %}
-        No hay evaluaciones.
-    {% endif %}
+<br><br>
+<!-- Contenedor para los gráficos -->
+<div class="chart-row" style="display: flex; flex-wrap: wrap; gap: 20px;">
+    <!-- Gráfica de AHT - segmento general (más pequeña) -->
+    <div class="chart-item" style="flex: 1 1 300px; max-width: 45%;">
+        <h3>AHT (seg) - General</h3>
+        <canvas id="ahtChart" width="300" height="150"></canvas>
+    </div>
+    <!-- Gráfica de SL - segmento general (más pequeña) -->
+    <div class="chart-item" style="flex: 1 1 300px; max-width: 45%;">
+        <h3>SLA (%) - General</h3>
+        <canvas id="slChart" width="300" height="150"></canvas>
+    </div>
 </div>
 
 <br>
-<!-- Gráfica de AHT - segmento general -->
-<canvas id="ahtChart" width="400" height="200"></canvas>
-<br>
-<!-- Gráfica de SL - segmento general -->
-<canvas id="slChart" width="400" height="200"></canvas>
-<br>
-<!-- Gráfica de CSAT (por segmentos) -->
-<canvas id="csatChart" width="400" height="200"></canvas>
+<!-- Gráfica de CSAT -->
+<div class="chart-row" style="margin-top: 20px;">
+    <div class="chart-item" style="width: 100%;">
+        <h3>CSAT Promedio por Segmento</h3>
+        <canvas id="csatChart" width="600" height="150"></canvas>
+    </div>
+</div>
 
 <!-- Incluir Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

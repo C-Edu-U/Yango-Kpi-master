@@ -559,3 +559,34 @@ def add_comments_view(request, evaluation_key):
     else:
         form = QAEvaluationCommentsForm(instance=evaluation)
     return render(request, 'dashboard/add_comments.html', {'form': form, 'evaluation': evaluation})
+
+@login_required
+def qa_ranking_view(request):
+    # Obtener filtros desde los parámetros GET
+    agent_filter = request.GET.get('agent') or ""
+    team_filter = request.GET.get('team') or ""
+    week_start = request.GET.get('week_start') or ""
+    week_end = request.GET.get('week_end') or ""
+    
+    # Filtrar las evaluaciones QA según los parámetros recibidos
+    qa_evals = QAEvaluation.objects.all().select_related('agent')
+    if agent_filter:
+        qa_evals = qa_evals.filter(agent__agent_name=agent_filter)
+    if team_filter:
+        qa_evals = qa_evals.filter(agent__team=team_filter)
+    if week_start:
+        qa_evals = qa_evals.filter(interaction_date__gte=week_start)
+    if week_end:
+        qa_evals = qa_evals.filter(interaction_date__lte=week_end)
+    
+    # Agrupar por agente y calcular el promedio de total_final_score
+    ranking = qa_evals.values('agent__agent_name').annotate(avg_qa=Avg('total_final_score')).order_by('-avg_qa')
+    
+    context = {
+        'ranking': ranking,
+        'selected_agent': agent_filter,
+        'selected_team': team_filter,
+        'week_start': week_start,
+        'week_end': week_end,
+    }
+    return render(request, 'dashboard/qa_ranking.html', context)

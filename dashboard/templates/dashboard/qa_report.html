@@ -32,10 +32,16 @@
         <br><br>
         <button type="submit">Filtrar</button>
     </form>
-
+    <!-- Botón para generar reporte en PDF -->
     <br>
     <a href="{% url 'download_qa_pdf' %}?agent={{ selected_agent|default:'' }}&team={{ selected_team|default:'' }}&week_start={{ week_start|default:'' }}&week_end={{ week_end|default:'' }}" style="background: #333; color: #fff; padding: 8px 12px; text-decoration: none; border-radius: 4px;">Descargar PDF</a>
     <br>
+    <br>
+    <!-- Botón para generar ranking de QA -->
+    <a href="{% url 'qa_ranking' %}?agent={{ selected_agent|default:'' }}&team={{ selected_team|default:'' }}&week_start={{ week_start|default:'' }}&week_end={{ week_end|default:'' }}"
+       style="display: inline-block; background: #333; color: #fff; padding: 8px 12px; text-decoration: none; border-radius: 4px;">
+       Generar Ranking de QA
+    </a>
     <p><strong>Total Evaluaciones QA:</strong> {{ qa_count }}</p>
     <!-- Recuadro con el promedio de total_final_score -->
     {% if qa_avg %}

@@ -10,7 +10,7 @@ import pandas as pd
 import re
 from datetime import datetime
 from django.contrib.auth import logout
-from .utils import render_to_pdf, safe_int, safe_float
+from .utils import render_to_pdf, safe_int, safe_float, parse_date
 
 
 
@@ -29,16 +29,56 @@ class CustomLoginView(LoginView):
 
 @login_required
 def agents_view(request):
-    if request.method == 'POST':
+    # Lógica para agregar un agente individual
+    if request.method == 'POST' and 'operator_login' in request.POST:
         form = AgentForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('agents')  # Redirige a la misma página para evitar reenvío de formulario
+            return redirect('agents')
+    # Lógica para importar agentes desde XLSX
+    elif request.method == 'POST' and request.FILES.get('file'):
+        file = request.FILES.get('file')
+        try:
+            df = pd.read_excel(file)
+        except Exception as e:
+            context = {'error': f"Error al leer el archivo: {e}"}
+            # Se carga la lista actual de agentes para la vista
+            context['agents'] = Agent.objects.all()
+            context['form'] = AgentForm()
+            return render(request, 'dashboard/agents.html', context)
+        
+        # Columnas requeridas en el archivo XLSX
+        required_columns = ['operator_login', 'agent_name', 'team']
+        for col in required_columns:
+            if col not in df.columns:
+                context = {'error': f"Falta la columna requerida: {col}"}
+                context['agents'] = Agent.objects.all()
+                context['form'] = AgentForm()
+                return render(request, 'dashboard/agents.html', context)
+        
+        count = 0
+        for index, row in df.iterrows():
+            operator_login_value = str(row['operator_login']).strip()
+            agent_name_value = str(row['agent_name']).strip()
+            team_value = str(row['team']).strip()
+            # Si el agente ya existe, actualiza; si no, crea uno nuevo.
+            agent, created = Agent.objects.update_or_create(
+                operator_login=operator_login_value,
+                defaults={'agent_name': agent_name_value, 'team': team_value}
+            )
+            count += 1
+        context = {'success': f"Se importaron {count} agentes correctamente."}
+        # Continuamos mostrando la lista actualizada
+        context['agents'] = Agent.objects.all()
+        context['form'] = AgentForm()
+        return render(request, 'dashboard/agents.html', context)
+    
     else:
         form = AgentForm()
     
-    agents = Agent.objects.all()  # Obtiene la lista de agentes existentes
-    return render(request, 'dashboard/agents.html', {'form': form, 'agents': agents})
+    agents = Agent.objects.all()
+    context = {'form': form, 'agents': agents}
+    return render(request, 'dashboard/agents.html', context)
 
 @login_required
 def weekly_metrics_view(request):
@@ -192,11 +232,12 @@ def qa_evaluations_view(request):
             except Agent.DoesNotExist:
                 supervisor = None  # El supervisor puede ser nulo
             
-            # Procesar la fecha "Updated". Suponemos el formato "03-11-2023 19:15"
+            # Procesar la fecha "Updated" usando la función parse_date
             try:
-                updated = datetime.strptime(updated_str, "%d-%m-%Y %H:%M")
-            except Exception as e:
-                continue  # Si falla el procesamiento, omitir el registro
+                updated = parse_date(updated_str)
+            except ValueError as e:
+                # Si falla el parseo, omitir el registro
+                continue
             
             # Crear el registro de QAEvaluation
             try:
@@ -254,11 +295,10 @@ def weekly_metrics_report_view(request):
 
 @login_required
 def qa_report_view(request):
-    # Obtener filtros desde los parámetros GET
-    agent_filter = request.GET.get('agent')
-    week_start = request.GET.get('week_start')
-    week_end = request.GET.get('week_end')
-    team_filter = request.GET.get('team')
+    agent_filter = request.GET.get('agent') or ""
+    week_start = request.GET.get('week_start') or ""
+    week_end = request.GET.get('week_end') or ""
+    team_filter = request.GET.get('team') or ""
     
     # Consulta inicial para QA Evaluations
     qa_evals = QAEvaluation.objects.all().select_related('agent', 'supervisor')
@@ -270,14 +310,14 @@ def qa_report_view(request):
         qa_evals = qa_evals.filter(interaction_date__gte=week_start)
     if week_end:
         qa_evals = qa_evals.filter(interaction_date__lte=week_end)
-    
-    # Calcular promedio de total_final_score de las evaluaciones filtradas
+
+    # Calcular el promedio y el total de evaluaciones
     qa_avg = qa_evals.aggregate(avg_score=Avg('total_final_score'))['avg_score']
+    qa_count = qa_evals.count()
     
-    # Lista de agentes y equipos para el dropdown
     agents = Agent.objects.all()
     teams = Agent.objects.values_list('team', flat=True).distinct()
-    
+
     context = {
         'qa_evals': qa_evals,
         'agents': agents,
@@ -287,8 +327,10 @@ def qa_report_view(request):
         'week_start': week_start,
         'week_end': week_end,
         'qa_avg': qa_avg,
+        'qa_count': qa_count,
     }
     return render(request, 'dashboard/qa_report.html', context)
+
 
 def custom_logout_view(request):
     # Realiza el logout del usuario
@@ -431,6 +473,7 @@ def download_qa_pdf(request):
         qa_evals = qa_evals.filter(interaction_date__lte=week_end)
     
     qa_avg = qa_evals.aggregate(avg_score=Avg('total_final_score'))['avg_score']
+    qa_count = qa_evals.count()
     agents = Agent.objects.all()
     teams = Agent.objects.values_list('team', flat=True).distinct()
     
@@ -443,6 +486,7 @@ def download_qa_pdf(request):
         'week_start': week_start,
         'week_end': week_end,
         'qa_avg': qa_avg,
+        'qa_count': qa_count,
     }
     pdf = render_to_pdf('dashboard/qa_report_pdf.html', context)
     return pdf

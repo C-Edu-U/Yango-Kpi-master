@@ -4,32 +4,17 @@
   <meta charset="UTF-8">
   <title>Reporte de Evaluaciones QA</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      margin: 20px;
+    @page {
+    size: A4 landscape;
+    margin: 20mm;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .filter-info {
-      margin-top: 10px;
-      font-size: 12px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #333;
-      padding: 4px;
-      text-align: center;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
+    body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .filter-info { margin-top: 10px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #333; padding: 4px; text-align: center; }
+    th { background-color: #f4f4f4; }
+    
   </style>
 </head>
 <body>
@@ -38,11 +23,14 @@
   </div>
   <div class="filter-info">
     <p>
-      Datos del reporte:
+      Filtros aplicados:
       {% if selected_agent %} Agente: {{ selected_agent }} {% endif %}
       {% if selected_team %} | Equipo: {{ selected_team }} {% endif %}
       {% if week_start %} | Inicio: {{ week_start }} {% endif %}
       {% if week_end %} | Fin: {{ week_end }} {% endif %}
+    </p>
+    <p>
+      <strong>Total Evaluaciones QA:</strong> {{ qa_count }}
     </p>
     <p>
       <strong>Promedio Total Final Score (QA):</strong>
@@ -57,22 +45,24 @@
     <thead>
       <tr>
         <th>Clave Evaluación</th>
-        <th>Agente</th>
         <th>Fecha de Interacción</th>
         <th>Total Final Score</th>
+        <th>Ticket</th>
+        <th>Comentarios</th>
       </tr>
     </thead>
     <tbody>
       {% for qa in qa_evals %}
       <tr>
         <td>{{ qa.evaluation_key }}</td>
-        <td>{{ qa.agent.agent_name }}</td>
         <td>{{ qa.interaction_date }}</td>
         <td>{{ qa.total_final_score }}</td>
+        <td>{{ qa.ticket }}</td>
+        <td>{{ qa.comments_on_interaction }}</td>
       </tr>
       {% empty %}
       <tr>
-        <td colspan="9">No se encontraron evaluaciones.</td>
+        <td colspan="11">No se encontraron evaluaciones.</td>
       </tr>
       {% endfor %}
     </tbody>

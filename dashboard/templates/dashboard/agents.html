@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}
 
 {% block content %}
-<h1>Gestión de Agentes <i class="fas fa-user"></i></h1>
+<h1>Gestión de Agentes</h1>
 
 <!-- Formulario para agregar un nuevo agente -->
 <h2>Agregar Nuevo Agente</h2>
@@ -10,6 +10,26 @@
     {{ form.as_p }}
     <button type="submit">Agregar Agente</button>
 </form>
+
+<hr>
+
+<!-- Formulario para importar agentes desde XLSX -->
+<h2>Importar Agentes desde Archivo XLSX</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="file">Archivo XLSX:</label>
+    <input type="file" name="file" id="file" accept=".xlsx" required>
+    <button type="submit">Importar</button>
+</form>
+
+<br>
+<!-- Mostrar mensajes de error o éxito -->
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+{% if success %}
+    <p style="color: green;">{{ success }}</p>
+{% endif %}
 
 <!-- Lista de agentes existentes -->
 <h2>Lista de Agentes</h2>
@@ -29,12 +49,9 @@
             <td>{{ agent.agent_name }}</td>
             <td>{{ agent.team }}</td>
             <td>
-                <a href="{% url 'edit_agent' agent.operator_login %}">
-                    <i class="fas fa-pencil-alt"></i> Editar
-                </a>
+                <a href="{% url 'edit_agent' agent.operator_login %}">Editar</a>
                 |
-                <a href="{% url 'delete_agent' agent.operator_login %}">
-                    <i class="fas fa-trash-alt"></i> Eliminar
+                <a href="{% url 'delete_agent' agent.operator_login %}">Eliminar</a>
             </td>
         </tr>
         {% empty %}

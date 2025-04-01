@@ -48,43 +48,45 @@
     </div>
 
     <!-- Sección de Resumen de Weekly Metrics -->
+    <!-- Sección de Resumen de Weekly Metrics -->
     <div class="section">
         <h2>Resumen de Weekly Metrics</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>Indicador</th>
-                    <th>Valor Promedio</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>AHT (seg) - General</td>
-                    <td>{{ aht_data|default:"N/A" }}</td>
-                </tr>
-                <tr>
-                    <td>SLA (%) - General</td>
-                    <td>{{ sl_data|default:"N/A" }}</td>
-                </tr>
-                <tr>
-                    <td>CSAT - Clientes</td>
-                    <td>{{ csat_clientes|default:"N/A" }}</td>
-                </tr>
-                <tr>
-                    <td>CSAT - Repartidores</td>
-                    <td>{{ csat_repartidores|default:"N/A" }}</td>
-                </tr>
-                <tr>
-                    <td>CSAT - Restaurantes</td>
-                    <td>{{ csat_restaurantes|default:"N/A" }}</td>
-                </tr>
-                <tr>
-                    <td>CSAT - General</td>
-                    <td>{{ csat_general|default:"N/A" }}</td>
-                </tr>
-            </tbody>
+        <thead>
+            <tr>
+            <th>Indicador</th>
+            <th>Valor Promedio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td>AHT (seg) - General</td>
+            <td>{{ aht_data|default:"N/A"|floatformat:0 }}</td>
+            </tr>
+            <tr>
+            <td>SLA (%) - General</td>
+            <td>{{ sl_data|default:"N/A"|floatformat:2 }}</td>
+            </tr>
+            <tr>
+            <td>CSAT - Clientes</td>
+            <td>{{ csat_clientes|default:"N/A"|floatformat:2 }}</td>
+            </tr>
+            <tr>
+            <td>CSAT - Repartidores</td>
+            <td>{{ csat_repartidores|default:"N/A"|floatformat:2 }}</td>
+            </tr>
+            <tr>
+            <td>CSAT - Restaurantes</td>
+            <td>{{ csat_restaurantes|default:"N/A"|floatformat:2 }}</td>
+            </tr>
+            <tr>
+            <td>CSAT - General</td>
+            <td>{{ csat_general|default:"N/A"|floatformat:2 }}</td>
+            </tr>
+        </tbody>
         </table>
     </div>
+  
 
     <!-- Sección de Resumen de QA Evaluations -->
     <div class="section">

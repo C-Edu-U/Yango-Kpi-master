@@ -23,7 +23,7 @@
   </div>
   <div class="filter-info">
     <p>
-      Filtros aplicados:
+      Detalles del reporte:
       {% if selected_agent %} Agente: {{ selected_agent }} {% endif %}
       {% if selected_team %} | Equipo: {{ selected_team }} {% endif %}
       {% if week_start %} | Inicio: {{ week_start }} {% endif %}
@@ -57,7 +57,13 @@
         <td>{{ qa.evaluation_key }}</td>
         <td>{{ qa.interaction_date }}</td>
         <td>{{ qa.total_final_score }}</td>
-        <td>{{ qa.ticket }}</td>
+        <td>
+          {% if qa.ticket %}
+            <a href="{{ qa.ticket }}">Link</a>
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
         <td>{{ qa.comments_on_interaction }}</td>
       </tr>
       {% empty %}

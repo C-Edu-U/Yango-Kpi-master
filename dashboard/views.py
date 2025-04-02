@@ -555,7 +555,7 @@ def add_comments_view(request, evaluation_key):
         form = QAEvaluationCommentsForm(request.POST, instance=evaluation)
         if form.is_valid():
             form.save()
-            return redirect('qa_evaluations')  # Redirige a la lista de evaluaciones QA
+            return redirect('qa_report')  # Redirige a la lista de evaluaciones QA
     else:
         form = QAEvaluationCommentsForm(instance=evaluation)
     return render(request, 'dashboard/add_comments.html', {'form': form, 'evaluation': evaluation})

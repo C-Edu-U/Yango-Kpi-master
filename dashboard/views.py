@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import AgentForm, QAEvaluationCommentsForm
 import pandas as pd
 from django.shortcuts import render, redirect
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from .models import Agent, WeeklyMetrics, QAEvaluation
@@ -11,7 +11,6 @@ import re
 from datetime import datetime
 from django.contrib.auth import logout
 from .utils import render_to_pdf, safe_int, safe_float, parse_date
-
 
 
 def landing_view(request):
@@ -560,15 +559,14 @@ def add_comments_view(request, evaluation_key):
         form = QAEvaluationCommentsForm(instance=evaluation)
     return render(request, 'dashboard/add_comments.html', {'form': form, 'evaluation': evaluation})
 
+
 @login_required
 def qa_ranking_view(request):
-    # Obtener filtros desde los parámetros GET
     agent_filter = request.GET.get('agent') or ""
-    team_filter = request.GET.get('team') or ""
-    week_start = request.GET.get('week_start') or ""
-    week_end = request.GET.get('week_end') or ""
-    
-    # Filtrar las evaluaciones QA según los parámetros recibidos
+    team_filter  = request.GET.get('team') or ""
+    week_start   = request.GET.get('week_start') or ""
+    week_end     = request.GET.get('week_end') or ""
+
     qa_evals = QAEvaluation.objects.all().select_related('agent')
     if agent_filter:
         qa_evals = qa_evals.filter(agent__agent_name=agent_filter)
@@ -578,10 +576,18 @@ def qa_ranking_view(request):
         qa_evals = qa_evals.filter(interaction_date__gte=week_start)
     if week_end:
         qa_evals = qa_evals.filter(interaction_date__lte=week_end)
-    
-    # Agrupar por agente y calcular el promedio de total_final_score
-    ranking = qa_evals.values('agent__agent_name').annotate(avg_qa=Avg('total_final_score')).order_by('-avg_qa')
-    
+
+    # Agrupamos por agente y equipo, calculamos avg y count
+    ranking = (
+        qa_evals
+        .values('agent__agent_name', 'agent__team')
+        .annotate(
+            count_qa=Count('pk'),
+            avg_qa=Avg('total_final_score')
+        )
+        .order_by('-avg_qa')
+    )
+
     context = {
         'ranking': ranking,
         'selected_agent': agent_filter,
